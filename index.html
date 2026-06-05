@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frontend Dev Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3d;
+    --accent: #7c6aff;
+    --accent2: #ff6a9b;
+    --accent3: #6affd4;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --success: #4ade80;
+    --error: #f87171;
+    --warning: #fbbf24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 20%, rgba(124,106,255,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,106,155,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 50% 50%, rgba(106,255,212,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  /* SCREEN: HOME */
+  #home-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(124,106,255,0.15);
+    border: 1px solid rgba(124,106,255,0.3);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 32px;
+    letter-spacing: 0.05em;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .logo-badge::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    animation: fadeDown 0.7s ease 0.1s both;
+  }
+
+  h1 span.grad {
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    max-width: 500px;
+    animation: fadeDown 0.7s ease 0.2s both;
+  }
+
+  /* Tech tags */
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.7s ease 0.3s both;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .tag:hover { border-color: var(--accent); color: var(--accent); }
+  .tag.html { border-color: rgba(255,90,0,0.4); color: #ff7a33; }
+  .tag.css { border-color: rgba(0,120,255,0.4); color: #4da6ff; }
+  .tag.js { border-color: rgba(255,210,0,0.4); color: #ffd700; }
+  .tag.ts { border-color: rgba(49,120,198,0.4); color: #4a90d9; }
+  .tag.react { border-color: rgba(97,218,251,0.4); color: #61dafb; }
+  .tag.next { border-color: rgba(255,255,255,0.2); color: #ccc; }
+  .tag.angular { border-color: rgba(221,0,49,0.4); color: #ff4d6a; }
+  .tag.sass { border-color: rgba(204,102,153,0.4); color: #cc6699; }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 48px;
+    animation: fadeDown 0.7s ease 0.4s both;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { font-size: 13px; color: var(--muted); }
+
+  /* Start btn */
+  .btn-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--accent), #9b55ff);
+    color: white;
+    border: none;
+    padding: 18px 48px;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 40px rgba(124,106,255,0.3);
+    animation: fadeDown 0.7s ease 0.5s both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-start::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 60px rgba(124,106,255,0.5);
+  }
+  .btn-start:hover::after { opacity: 1; }
+  .btn-start:active { transform: translateY(0); }
+
+  /* SCREEN: QUIZ */
+  #quiz-screen { display: none; min-height: 100vh; padding: 24px 20px; }
+
+  .quiz-header {
+    max-width: 760px;
+    margin: 0 auto 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .quiz-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    white-space: nowrap;
+  }
+
+  .score-badge span { color: var(--accent3); font-weight: 700; }
+
+  /* Question card */
+  .question-card {
+    max-width: 760px;
+    margin: 0 auto;
+    animation: slideIn 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .q-tech-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .q-num {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .q-text {
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 32px;
+    color: var(--text);
+  }
+
+  .q-text code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(124,106,255,0.15);
+    color: var(--accent3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  /* Code block in question */
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #a8b3cf;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Options */
+  .options {
+    display: grid;
+    gap: 12px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124,106,255,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+  .option-btn:hover:not(:disabled)::before { opacity: 1; }
+
+  .option-letter {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option-text { flex: 1; line-height: 1.4; }
+  .option-text code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255,255,255,0.08);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  /* Correct / Wrong states */
+  .option-btn.correct {
+    border-color: var(--success);
+    background: rgba(74,222,128,0.08);
+  }
+  .option-btn.correct .option-letter {
+    background: var(--success);
+    color: #000;
+    border-color: var(--success);
+  }
+
+  .option-btn.wrong {
+    border-color: var(--error);
+    background: rgba(248,113,113,0.08);
+  }
+  .option-btn.wrong .option-letter {
+    background: var(--error);
+    color: #000;
+    border-color: var(--error);
+  }
+
+  .option-btn:disabled { cursor: not-allowed; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    max-width: 560px;
+    width: 100%;
+    animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.92) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .modal-icon.wrong { background: rgba(248,113,113,0.15); }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .modal-wrong-answer {
+    font-size: 14px;
+    color: var(--error);
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .modal-correct-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .modal-correct-answer {
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--success);
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .modal-explanation {
+    font-size: 15px;
+    color: #b0b0c8;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .modal-explanation code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(124,106,255,0.15);
+    color: var(--accent3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  .modal-explanation .code-block {
+    margin: 12px 0 0;
+    font-size: 12px;
+  }
+
+  .btn-next {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #9b55ff);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* RESULT SCREEN */
+  #result-screen {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    max-width: 520px;
+    width: 100%;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .result-emoji { font-size: 64px; margin-bottom: 16px; }
+
+  .result-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .result-score {
+    font-size: 56px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 16px 0;
+  }
+
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0 32px;
+  }
+
+  .breakdown-item {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 16px 12px;
+  }
+
+  .breakdown-num {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 4px;
+  }
+
+  .breakdown-label { font-size: 12px; color: var(--muted); }
+
+  .btn-restart {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #9b55ff);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 30px rgba(124,106,255,0.3);
+  }
+
+  .btn-restart:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Tech badge colors */
+  .tech-html { background: rgba(255,90,0,0.15); color: #ff7a33; }
+  .tech-css { background: rgba(0,120,255,0.15); color: #4da6ff; }
+  .tech-sass { background: rgba(204,102,153,0.15); color: #cc6699; }
+  .tech-scss { background: rgba(204,102,153,0.15); color: #cc6699; }
+  .tech-js { background: rgba(255,210,0,0.15); color: #ffd700; }
+  .tech-jsx { background: rgba(97,218,251,0.15); color: #61dafb; }
+  .tech-ts { background: rgba(49,120,198,0.15); color: #4a90d9; }
+  .tech-tsx { background: rgba(97,218,251,0.15); color: #38bdf8; }
+  .tech-next { background: rgba(255,255,255,0.1); color: #ccc; }
+  .tech-angular { background: rgba(221,0,49,0.15); color: #ff4d6a; }
+
+  .correct-modal-icon { font-size: 32px; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div id="app">
+
+  <!-- HOME -->
+  <div id="home-screen">
+    <div class="logo-badge">Frontend Dev Quiz</div>
+    <h1>Frontend bilimingizni<br><span class="grad">sinab ko'ring</span></h1>
+    <p class="subtitle">HTML, CSS, SASS, JS, TS, React, Next.js, Angular — hammasi aralash</p>
+
+    <div class="tech-tags">
+      <span class="tag html">HTML</span>
+      <span class="tag css">CSS</span>
+      <span class="tag sass">SASS</span>
+      <span class="tag sass">SCSS</span>
+      <span class="tag js">JS</span>
+      <span class="tag react">JSX</span>
+      <span class="tag ts">TS</span>
+      <span class="tag react">TSX</span>
+      <span class="tag next">Next.js</span>
+      <span class="tag angular">Angular</span>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">120+</div>
+        <div class="stat-label">Savollar</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">10</div>
+        <div class="stat-label">Mavzular</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">20</div>
+        <div class="stat-label">Har sessiya</div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">
+      <span>▶</span> Testni boshlash
+    </button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz-screen">
+    <div class="quiz-header">
+      <div class="quiz-logo">&lt;FDQ/&gt;</div>
+      <div class="progress-wrap">
+        <div class="progress-info">
+          <span id="q-counter">1 / 20</span>
+          <span id="q-tech-label">—</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width:5%"></div>
+        </div>
+      </div>
+      <div class="score-badge">✓ <span id="live-score">0</span></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <!-- Dynamic -->
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-screen">
+    <div class="result-card">
+      <div class="result-emoji" id="result-emoji">🏆</div>
+      <div class="result-title" id="result-title">Natija</div>
+      <div class="result-score" id="result-score">0/20</div>
+      <div class="result-breakdown">
+        <div class="breakdown-item">
+          <div class="breakdown-num" id="res-correct" style="color:var(--success)">0</div>
+          <div class="breakdown-label">To'g'ri</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-num" id="res-wrong" style="color:var(--error)">0</div>
+          <div class="breakdown-label">Noto'g'ri</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-num" id="res-pct" style="color:var(--accent)">0%</div>
+          <div class="breakdown-label">Foiz</div>
+        </div>
+      </div>
+      <button class="btn-restart" onclick="startQuiz()">🔄 Qayta boshlash</button>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-icon wrong" id="modal-icon">❌</div>
+      <div class="modal-title" id="modal-title">Noto'g'ri javob!</div>
+      <div class="modal-wrong-answer" id="modal-wrong"></div>
+      <div class="modal-correct-label">To'g'ri javob:</div>
+      <div class="modal-correct-answer" id="modal-correct"></div>
+      <div class="modal-explanation" id="modal-explanation"></div>
+      <button class="btn-next" onclick="nextQuestion()">Keyingi savol →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  // ─── HTML ───
+  {tech:"HTML", q:"HTML5 da semantik teg bo'lmagan element qaysi?", opts:["<article>","<section>","<div>","<aside>"], ans:2,
+   exp:"<code>&lt;div&gt;</code> — bu semantik bo'lmagan (non-semantic) element. U hech qanday ma'no bermaydi. <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code> esa semantik teglar — brauzer va qidiruv tizimlariga kontent ma'nosini tushuntiradi."},
+  {tech:"HTML", q:"<meta> tegi qayerga yoziladi?", opts:["<body> ichiga","<head> ichiga","<html> tagiga","<footer> ichiga"], ans:1,
+   exp:"<code>&lt;meta&gt;</code> teglar faqat <code>&lt;head&gt;</code> ichiga yoziladi. Ular sahifaning metadata'sini (charset, viewport, description va boshqalar) belgilaydi va foydalanuvchiga ko'rinmaydi."},
+  {tech:"HTML", q:"Rasm alt atributining asosiy vazifasi nima?", opts:["Rasmga stil berish","Rasm yuklanmasa matn ko'rsatish","Rasm hajmini belgilash","Rasmga link berish"], ans:1,
+   exp:"<code>alt</code> atributi rasm yuklanmaganda yoki ko'rish imkoniyati cheklangan foydalanuvchilar uchun matnli alternativ ko'rsatadi. Bu accessibility (a11y) uchun juda muhim va SEO ga ham yordam beradi."},
+  {tech:"HTML", q:"<input type='?'> HTML5 da email validatsiyasini o'zi amalga oshiradi?", opts:["text","email","validate","mail"], ans:1,
+   exp:"<code>&lt;input type=\"email\"&gt;</code> — brauzer o'zi email formatini tekshiradi (@ belgisi va to'g'ri format). Bu HTML5 ning built-in validatsiyasi."},
+  {tech:"HTML", q:"data-* atributlari nima uchun ishlatiladi?", opts:["CSS stilini berish uchun","JavaScript uchun maxsus ma'lumot saqlash","SEO uchun","Forma yuborish uchun"], ans:1,
+   exp:"<code>data-*</code> atributlari HTML elementlarga o'zingizning maxsus ma'lumotlaringizni saqlash uchun ishlatiladi. Masalan: <code>&lt;div data-user-id=\"123\"&gt;</code> — bu ma'lumotni JS da <code>element.dataset.userId</code> orqali o'qish mumkin."},
+  {tech:"HTML", q:"<script> tegini <body> oxiriga qo'yishning afzalligi nima?", opts:["Skript tezroq ishlaydi","DOM to'liq yuklanib bo'lgach skript ishlaydi","CSS tezroq yuklanadi","Hech qanday farq yo'q"], ans:1,
+   exp:"<code>&lt;script&gt;</code> ni <code>&lt;body&gt;</code> oxiriga qo'yilsa, avval HTML to'liq yuklanadi, keyin JavaScript ishlaydi. Bu sahifaning vizual tarkibini tezroq ko'rsatadi va DOM elementlari mavjud bo'lganda skript boshlanadi."},
+  {tech:"HTML", q:"<picture> elementining maqsadi nima?", opts:["Rasmni kattalash","Turli ekran o'lchamlari uchun turli rasm ko'rsatish","Rasmga caption berish","Video o'ynash"], ans:1,
+   exp:"<code>&lt;picture&gt;</code> elementi responsive images uchun ishlatiladi. Bir nechta <code>&lt;source&gt;</code> elementlari bilan ekran o'lchami yoki media query asosida mos rasmni tanlaydi."},
+  {tech:"HTML", q:"defer va async atributlari farqi nima?", opts:["Farqi yo'q","defer — DOM tayyor bo'lgach, async — yuklanishi bilan ishlaydi","async — DOM tayyor bo'lgach, defer — yuklanishi bilan ishlaydi","Ikkalasi ham bir xil ishlaydi"], ans:1,
+   exp:"<code>defer</code>: HTML parse bo'lib tugagach skript ishlaydi, tartib saqlanadi. <code>async</code>: skript yuklanishi bilanoq ishlaydi, tartib saqlanmaydi. Ko'p hollarda <code>defer</code> xavfsizroq."},
+  {tech:"HTML", q:"<label> elementi <input> bilan qanday bog'lanadi?", opts:["class orqali","for va id orqali","name orqali","type orqali"], ans:1,
+   exp:"<code>&lt;label for=\"myId\"&gt;</code> va <code>&lt;input id=\"myId\"&gt;</code> — label ning <code>for</code> atributi input ning <code>id</code> si bilan mos kelishi kerak. Bu accessibility uchun juda muhim: label'ga bosish orqali input focus oladi."},
+  {tech:"HTML", q:"<iframe> sandboxing nima uchun kerak?", opts:["Iframe ni ko'rinmas qilish","Iframe ichidagi kontentni xavfli amallardan cheklash","Iframe ni to'ldirish","Iframe rangini o'zgartirish"], ans:1,
+   exp:"<code>sandbox</code> atributi iframe ichidagi kontent imkoniyatlarini cheklaydi: skript ishlashi, forma yuborish, popup ochish va h.k. Bu XSS va boshqa xavfsizlik xatarlarini kamaytiradi."},
+  {tech:"HTML", q:"<base> elementi nima qiladi?", opts:["Sahifa fonini belgilaydi","Barcha relative URL lar uchun asosiy URL ni belgilaydi","Heading stil beradi","Jadval asosini yaratadi"], ans:1,
+   exp:"<code>&lt;base href=\"https://example.com/\"&gt;</code> — sahifadagi barcha relative URL lar uchun asosiy manzil belgilaydi. Faqat bitta <code>&lt;base&gt;</code> bo'lishi mumkin va u <code>&lt;head&gt;</code> ichiga yoziladi."},
+  {tech:"HTML", q:"<details> va <summary> elementlari nima uchun?", opts:["Jadval yaratish","Accordion/spoiler yaratish — JavaScript siz","Forma yaratish","Rasm ko'rsatish"], ans:1,
+   exp:"<code>&lt;details&gt;</code> va <code>&lt;summary&gt;</code> — JavaScript siz ochiq/yopiq bo'ladigan accordion yaratadi. <code>&lt;summary&gt;</code> ko'rinadigan sarlavha, qolgani <code>&lt;details&gt;</code> ichida yashiringan bo'ladi."},
+
+  // ─── CSS ───
+  {tech:"CSS", q:"CSS Box Model da margin, border, padding tartibida qaysi to'g'ri?", opts:["margin → padding → border → content","content → padding → border → margin","border → content → padding → margin","padding → border → content → margin"], ans:1,
+   exp:"CSS Box Model: <strong>content → padding → border → margin</strong>. Markazda content, atrofida padding, undan tashqarida border, eng tashqarida margin. Bu CSS layout ning asosi."},
+  {tech:"CSS", q:"position: sticky qanday ishlaydi?", opts:["Har doim ekranning tepasida turadi","Normal oqimda turadi, lekin scroll qilinganda belgilangan joyda 'yopishib' qoladi","position: fixed bilan bir xil","Faqat flex containerda ishlaydi"], ans:1,
+   exp:"<code>position: sticky</code> — element avval normal oqimda turadi. Foydalanuvchi scroll qilganda, element ko'rsatilgan pozitsiyaga (masalan <code>top: 0</code>) yetganda u shu joyda 'yopishib' qoladi. Sidebar menu lar uchun ideal."},
+  {tech:"CSS", q:"z-index faqat qaysi elementlarda ishlaydi?", opts:["Barcha elementlarda","position: static bo'lmagan elementlarda","faqat flex elementlarda","faqat absolute elementlarda"], ans:1,
+   exp:"<code>z-index</code> faqat <code>position</code> qiymati <code>static</code> bo'lmagan (ya'ni <code>relative</code>, <code>absolute</code>, <code>fixed</code>, <code>sticky</code>) elementlarda ishlaydi."},
+  {tech:"CSS", q:"CSS Specificity: qaysi selektor kuchli?", opts:["p { color: red }",".text { color: blue }","#title { color: green }","* { color: yellow }"], ans:2,
+   exp:"CSS Specificity tartibi: <strong>inline styles (1000) > #id (100) > .class (10) > element (1) > * (0)</strong>. Shuning uchun <code>#title</code> eng kuchli. Specificity qoidasi CSS da muhim tushuncha."},
+  {tech:"CSS", q:"display: flex va display: grid farqi?", opts:["Farqi yo'q","Flex — 1D (qator yoki ustun), Grid — 2D (qator VA ustun)","Grid — 1D, Flex — 2D","Faqat Grid responsive dizayn uchun"], ans:1,
+   exp:"<code>flexbox</code> — bir o'lchovli (1D): elementlarni faqat qator <strong>yoki</strong> ustun bo'ylab joylashtiradi. <code>grid</code> — ikki o'lchovli (2D): qator <strong>va</strong> ustun bo'ylab bir vaqtda boshqaradi. Kompleks layoutlar uchun grid, komponent ichidagi alignment uchun flex."},
+  {tech:"CSS", q:"CSS var() funksiyasi nima uchun?", opts:["JavaScript o'zgaruvchilarini CSS ga import qilish","CSS Custom Properties (o'zgaruvchilar) ishlatish","Matematik hisob-kitoblar","Animatsiya yaratish"], ans:1,
+   exp:"<code>var(--my-color)</code> — CSS Custom Properties ishlatadi. <code>:root { --primary: #7c6aff; }</code> deb e'lon qilib, keyin <code>color: var(--primary)</code> deb ishlatasiz. Theming va maintainability uchun ajoyib."},
+  {tech:"CSS", q:"CSS animation vs transition farqi?", opts:["Farqi yo'q","transition — faqat 2 holat orasida, animation — keyframe bilan murakkab animatsiya","animation — faqat 2 holat, transition — murakkab","Faqat transition CSS3 da mavjud"], ans:1,
+   exp:"<code>transition</code> — faqat boshlanish va tugash holati o'rtasidagi o'tish (hover, focus). <code>animation</code> — <code>@keyframes</code> orqali murakkab, ko'p bosqichli, avtomatik animatsiya. Loop va delay imkoniyatlari ham bor."},
+  {tech:"CSS", q:"rem va em farqi nima?", opts:["Farqi yo'q","rem — root elementga nisbatan, em — ota elementga nisbatan","em — root elementga, rem — ota elementga","Ikkalasi ham px ga teng"], ans:1,
+   exp:"<code>em</code> — bevosita ota elementning font-size'iga nisbatan. <code>rem</code> — faqat <code>&lt;html&gt;</code> (root) elementning font-size'iga nisbatan. <code>rem</code> predictable, <code>em</code> esa nesting muammosi yaratishi mumkin."},
+  {tech:"CSS", q:"CSS Grid: fr birlik nima?", opts:["Fixed piksel qiymati","Mavjud bo'sh joyni ulushlab taqsimlash","Font o'lchami","Frame rate"], ans:1,
+   exp:"<code>fr</code> (fraction) — grid konteynerning bo'sh joyini ulushlab taqsimlaydi. <code>grid-template-columns: 1fr 2fr</code> — birinchi ustun bir ulush, ikkinchisi ikki ulush oladi. Juda moslashuvchan va responsive."},
+  {tech:"CSS", q:"::before va ::after pseudo-elementlari qanday ishlaydi?", opts:["HTML ga yangi element qo'shadi","content property orqali element ichiga virtual kontent qo'shadi","Faqat text elementlarda ishlaydi","JavaScript bilan ishlatiladi"], ans:1,
+   exp:"<code>::before</code> va <code>::after</code> — <code>content</code> property bilan elementning boshiga yoki oxiriga virtual kontent qo'shadi. HTML ni o'zgartirmasdan dekorativ elementlar, ikonkalar, overlay lar yaratish uchun ishlatiladi."},
+  {tech:"CSS", q:"CSS clamp() funksiyasi nima qiladi?", opts:["Qiymatni belgilangan min va max orasida saqlaydi","Faqat maksimum qiymat belgilaydi","Faqat minimum qiymat belgilaydi","Sonni yaxlitlaydi"], ans:0,
+   exp:"<code>clamp(min, preferred, max)</code> — qiymat <code>min</code> dan kichik bo'lmaydi, <code>max</code> dan katta bo'lmaydi, o'rtada esa preferred qiymat ishlaydi. Masalan: <code>font-size: clamp(16px, 4vw, 32px)</code> — responsive typography uchun ideal."},
+  {tech:"CSS", q:"will-change property nima uchun?", opts:["Elementni ko'rinmas qilish","Brauzerga qaysi property o'zgarishini oldindan aytib, optimizatsiya qilish","Element o'lchamini oldindan belgilash","Animatsiya tezligini belgilash"], ans:1,
+   exp:"<code>will-change: transform</code> — brauzerga bu element tez orada o'zgarishini aytadi, brauzer esa GPU layer yaratib optimizatsiya qiladi. Lekin haddan ziyod ishlatmang — xotira sarflaydi."},
+
+  // ─── SASS/SCSS ───
+  {tech:"SASS", q:"SASS va SCSS farqi nima?", opts:["Hech farqi yo'q","SASS — indentatsiya asosida (qavslar yo'q), SCSS — CSS sintaksisiga o'xshash (qavslar bor)","SCSS — eski versiya, SASS — yangi","SASS faqat variable uchun"], ans:1,
+   exp:"<strong>SASS</strong>: indentatsiya asosida, qavslar va nuqta-vergul yo'q — Python ga o'xshash. <strong>SCSS</strong>: oddiy CSS sintaksisiga o'xshash, qavslar va nuqta-vergul bor. Hozirgi kunda ko'pchilik SCSS ishlatadi, chunki o'rganish osonroq."},
+  {tech:"SCSS", q:"SCSS nesting xatosi: qaysi holat muammoga olib keladi?", opts:["2 daraja nesting","5+ daraja chuqur nesting","Mixin ichida nesting","Variable bilan nesting"], ans:1,
+   exp:"SCSS da chuqur nesting (5+ daraja) CSS specificity muammolariga va mantiqiy murakkablikka olib keladi. BEM metodologiyasi va 2-3 daraja nesting bilan cheklash tavsiya etiladi."},
+  {tech:"SCSS", q:"@mixin va @include qanday ishlaydi?", opts:["@mixin ishlatadi, @include yaratadi","@mixin qayta foydalaniladigan kod bloki yaratadi, @include uni chaqiradi","Ikkalasi ham bir xil","@include parametrlarni qabul qiladi"], ans:1,
+   exp:"<code>@mixin</code> — qayta foydalaniladigan CSS kodi yaratadi (parametrlar bilan ham bo'lishi mumkin). <code>@include</code> — o'sha mixin'ni chaqiradi. Masalan: <code>@mixin flex-center { display: flex; align-items: center; }</code>"},
+  {tech:"SCSS", q:"@extend va @mixin ning farqi?", opts:["Farqi yo'q","@extend placeholder selectorni ulashadi, @mixin kodni nusxalaydi","@mixin placeholder ulashadi","@extend parametrlar qabul qiladi"], ans:1,
+   exp:"<code>@extend</code> — kompilyatsiyada selectorlarni birlashtiradi (kichikroq CSS). <code>@mixin</code> — har joyga kodni nusxalaydi (kattaroq CSS, lekin moslashuvchanroq). Parametr kerak bo'lsa — <code>@mixin</code>, oddiy ulashish uchun — <code>%placeholder</code> + <code>@extend</code>."},
+  {tech:"SCSS", q:"SCSS da $ belgi nima uchun?", opts:["CSS selector uchun","O'zgaruvchi (variable) yaratish uchun","ID selector uchun","Mixin uchun"], ans:1,
+   exp:"SCSS da <code>$primary-color: #7c6aff;</code> — dollar belgisi bilan o'zgaruvchi yaratiladi. Keyin <code>color: $primary-color;</code> deb ishlatiladi. CSS Custom Properties (<code>--var</code>) bilan farqi: SCSS o'zgaruvchilari kompilyatsiya vaqtida ishlanadi."},
+  {tech:"SCSS", q:"SCSS @forward va @use farqi nima?", opts:["Farqi yo'q","@use — import qiladi, @forward — boshqa faylga uzatadi","@forward — import qiladi, @use — uzatadi","Ikkalasi ham @import o'rniga"], ans:1,
+   exp:"<code>@use</code> — modulni import qiladi, faqat shu faylda ishlaydi. <code>@forward</code> — modulni import qilib, uni boshqa fayllarga ham uzatadi (re-export). Bu eski <code>@import</code> o'rniga modulli yondashuv."},
+
+  // ─── JavaScript ───
+  {tech:"JS", q:"let, const, var farqi (hoisting bo'yicha)?", opts:["Farqi yo'q","var — hoisting bilan undefined, let/const — TDZ (temporal dead zone)","let — hoisting yo'q, var/const — bor","const hoisting qilinmaydi"], ans:1,
+   exp:"<code>var</code> — hoisting bilan undefined qiymatiga ega bo'ladi. <code>let</code> va <code>const</code> ham hoisting qilinadi, lekin <strong>TDZ (Temporal Dead Zone)</strong> tufayli e'lon qilinmadan oldin ishlatilsa ReferenceError beradi."},
+  {tech:"JS", q:"JavaScript da == va === farqi?", opts:["Farqi yo'q","== type coercion qiladi, === type ham tekshiradi","=== type coercion qiladi","== faqat string uchun"], ans:1,
+   exp:"<code>==</code> (loose equality) — turli tipdagi qiymatlarni solishtirish uchun type coercion qiladi: <code>0 == false</code> → true. <code>===</code> (strict equality) — tip va qiymat ikkalasini tekshiradi: <code>0 === false</code> → false. Har doim <code>===</code> ishlatish tavsiya etiladi."},
+  {tech:"JS", q:"Event bubbling nima?", opts:["Event faqat target elementda ishlaydi","Event target dan boshlab ota-elementlar zanjiriga tarqaladi","Event faqat document da ishlaydi","Event qayta-qayta ishlaydi"], ans:1,
+   exp:"<strong>Event bubbling</strong>: hodisa target elementdan boshlanib, DOM daraxti bo'ylab yuqoriga (parent → document) ko'tariladi. <code>event.stopPropagation()</code> bilan to'xtatish mumkin. Event delegation patternida juda foydali."},
+  {tech:"JS", q:"Promise va async/await farqi?", opts:["Farqi yo'q","async/await — Promise ustidagi sintaktik shakar, kodni sinxron ko'rinishga keltiradi","Promise — yangi, async/await — eski","async/await Promise dan tezroq"], ans:1,
+   exp:"<code>async/await</code> — Promise larga asoslangan, lekin kodni sinxron ko'rinishga keltiruvchi sintaktik shakar. <code>await</code> Promise resolve bo'lgunicha kutadi. Error handling uchun <code>try/catch</code> ishlatiladi — <code>.catch()</code> o'rniga."},
+  {tech:"JS", q:"Closure nima?", opts:["Funksiya o'zini o'zi chaqirishi","Ichki funksiyaning tashqi funksiya scope'iga kirish imkoniyati","DOM ni yopish","Rekursiya turi"], ans:1,
+   exp:"<strong>Closure</strong> — ichki funksiya tashqi funksiya bajarilishini tugatgandan keyin ham tashqi funksiyaning o'zgaruvchilariga kirish imkoniyatiga ega bo'ladi. Module pattern, counter, memoization uchun ishlatiladi."},
+  {tech:"JS", q:"Array.map() va Array.forEach() farqi?", opts:["Farqi yo'q","map() yangi array qaytaradi, forEach() hech narsa qaytarmaydi","forEach() yangi array qaytaradi","map() faqat raqamlar uchun"], ans:1,
+   exp:"<code>map()</code> — har bir elementni qayta ishlaydi va <strong>yangi array qaytaradi</strong>. <code>forEach()</code> — har bir elementni qayta ishlaydi, lekin <strong>hech narsa qaytarmaydi</strong> (undefined). Transform kerak bo'lsa map(), faqat side effect uchun forEach()."},
+  {tech:"JS", q:"JavaScript da null va undefined farqi?", opts:["Farqi yo'q","undefined — qiymat berilmagan, null — ataylab bo'sh qilingan","null — qiymat berilmagan, undefined — bo'sh qilingan","Ikkalasi ham false ga teng"], ans:1,
+   exp:"<code>undefined</code> — o'zgaruvchi e'lon qilingan, lekin qiymat berilmagan (<code>let x;</code>). <code>null</code> — dasturchi ataylab bo'sh qiymati belgilagan (<code>let x = null;</code>). <code>typeof null === 'object'</code> — bu JavaScript ning mashhur bug'i."},
+  {tech:"JS", q:"Debounce va Throttle nima?", opts:["Bir xil narsa","Debounce — so'nggi chaqiruvdan keyin kechiktiradi, Throttle — ma'lum vaqt oralig'ida bir marta","Throttle — so'nggi chaqiruvdan kechiktiradi","Debounce tezroq ishlaydi"], ans:1,
+   exp:"<strong>Debounce</strong>: foydalanuvchi yozishni to'xtatgandan so'ng (masalan 300ms) bir marta ishlaydi — search input uchun ideal. <strong>Throttle</strong>: har N millisekundda bir marta ishlaydi — scroll yoki resize event uchun ideal."},
+  {tech:"JS", q:"prototype chain nima?", opts:["Array metodlari","Obyektning xususiyatlarni meros olish mexanizmi","CSS class zanjiri","Event propagation"], ans:1,
+   exp:"<strong>Prototype chain</strong>: JavaScript da har bir obyektda <code>__proto__</code> bor va u ota-obyektga ishora qiladi. Xususiyat topilmasa, prototype chain bo'ylab yuqoriga qaraladi. Bu JavaScript ning meros olish mexanizmi asosi."},
+  {tech:"JS", q:"Qaysi usul massivni tekislaydi (flatten)?", opts:["Array.flat()","Array.flatten()","Array.spread()","Array.concat()"], ans:0,
+   exp:"<code>Array.flat(depth)</code> — ichma-ich joylashgan massivni tekislaydi. <code>[1,[2,[3]]].flat(Infinity)</code> → <code>[1,2,3]</code>. <code>flatMap()</code> esa <code>map()</code> + <code>flat(1)</code> ni birlashtiradi."},
+
+  // ─── TypeScript ───
+  {tech:"TS", q:"TypeScript da interface va type farqi?", opts:["Farqi yo'q","interface — extend qilinishi mumkin va object uchun, type — union/intersection ham qo'llab-quvvatlaydi","type faqat primitive uchun","interface funksiya uchun, type object uchun"], ans:1,
+   exp:"<code>interface</code> — declaration merging va extend imkoniyati bor, asosan object shakli uchun. <code>type</code> — union (<code>A | B</code>), intersection (<code>A & B</code>), tuple va boshqa murakkab tiplari qo'llab-quvvatlaydi. Oddiy hollarda ikkalasi ham ishlaydi."},
+  {tech:"TS", q:"TypeScript da any vs unknown farqi?", opts:["Farqi yo'q","any — type checking o'chiradi, unknown — xavfsizroq, type guard talab qiladi","unknown — type checking o'chiradi","any xavfsizroq"], ans:1,
+   exp:"<code>any</code> — barcha type checking o'chiriladi, xavfli. <code>unknown</code> — noma'lum tip, lekin ishlatishdan oldin type guard (<code>typeof</code>, <code>instanceof</code>) kerak. <code>any</code> o'rniga <code>unknown</code> ishlatish yaxshi amaliyot."},
+  {tech:"TS", q:"Generics nima uchun kerak?", opts:["Faqat array uchun","Turli tiplarda ishlashi mumkin bo'lgan qayta foydalaniladigan kod yozish","Class uchun","Import qilish uchun"], ans:1,
+   exp:"<code>function identity&lt;T&gt;(arg: T): T { return arg; }</code> — Generics o'zgaruvchi tip bilan ishlash imkonini beradi. <code>T</code> chaqirilganda aniqlanadi. Type safety ni saqlab qayta foydalaniladigan kod yozish uchun ideal."},
+  {tech:"TS", q:"TypeScript da Partial<T> utility type nima qiladi?", opts:["T ning barcha xususiyatlarini required qiladi","T ning barcha xususiyatlarini optional qiladi","T ni array ga aylantiradi","T dan bitta xususiyatni olib tashlaydi"], ans:1,
+   exp:"<code>Partial&lt;T&gt;</code> — T tipining barcha xususiyatlarini optional (<code>?</code>) qiladi. Update funksiyalari yozishda foydali: <code>function update(obj: Partial&lt;User&gt;) {}</code> — barcha fieldlar ixtiyoriy."},
+  {tech:"TS", q:"TypeScript enum vs const enum farqi?", opts:["Farqi yo'q","const enum — kompilyatsiyada o'rniga qiymat qo'yiladi (tree-shaking yaxshi)","enum tezroq","const enum faqat string uchun"], ans:1,
+   exp:"<code>enum</code> — runtime da obyekt yaratadi. <code>const enum</code> — kompilyatsiyada enum ning o'rniga to'g'ridan-to'g'ri qiymat yoziladi, bundle hajmi kichrayadi. Lekin <code>const enum</code> ba'zi tool larda muammo yaratishi mumkin."},
+  {tech:"TS", q:"keyof operatori nima qiladi?", opts:["Objektdan key o'chiradi","Tip xususiyatlarining barcha nomlarini union type sifatida qaytaradi","Faqat string key lar uchun","Array index qaytaradi"], ans:1,
+   exp:"<code>keyof User</code> → <code>'id' | 'name' | 'email'</code> — User tipining barcha property nomlarini union type sifatida qaytaradi. Dynamic property access da type safety ta'minlash uchun juda foydali."},
+
+  // ─── JSX ───
+  {tech:"JSX", q:"JSX da className nima uchun ishlatiladi?", opts:["CSS class nom o'zgartirilgan","HTML class reserved so'z bo'lgani uchun JS da className ishlatiladi","Faqat React uchun maxsus class","camelCase qoidasi"], ans:1,
+   exp:"JSX da <code>class</code> so'zi JavaScript ning reserved keyword'i, shuning uchun <code>className</code> ishlatiladi. Babel yoki kompilyator uni HTML ga o'girganda <code>class</code> ga aylantiradi."},
+  {tech:"JSX", q:"JSX da qanday JavaScript kodi yoziladi?", opts:["<% %> ichida","{{ }} ichida","{ } ichida","// comment bilan"], ans:2,
+   exp:"JSX da JavaScript ifodalar <strong>{ }</strong> qavslari ichida yoziladi: <code>&lt;p&gt;{userName}&lt;/p&gt;</code>, <code>&lt;div style={{color: 'red'}}&gt;</code>. If/else o'rniga ternary yoki &&, array uchun map() ishlatiladi."},
+  {tech:"JSX", q:"JSX fragment nima va nima uchun kerak?", opts:["Hech kerak emas","Bir nechta elementni wrapper div siz qaytarish uchun","Performance uchun","State boshqarish uchun"], ans:1,
+   exp:"JSX da komponent bitta element qaytarishi shart. <code>&lt;&gt;...&lt;/&gt;</code> yoki <code>&lt;React.Fragment&gt;</code> — DOM ga qo'shimcha element qo'shmasdan bir nechta elementni qaytarish imkonini beradi."},
+
+  // ─── TSX ───
+  {tech:"TSX", q:"TSX da komponent props tipini qanday belgilash tavsiya etiladi?", opts:["any ishlatish","interface yoki type bilan Props yaratish","PropTypes ishlatish","Props typed bo'lmaydi"], ans:1,
+   exp:"<code>interface ButtonProps { label: string; onClick: () => void; }</code> — props uchun alohida interface/type yaratish best practice. Bu IDE da autocomplete va compile-time error checking ta'minlaydi."},
+  {tech:"TSX", q:"React.FC yoki function component qaysi yaxshi?", opts:["React.FC har doim yaxshi","function component — React.FC children ni implicit qo'shar edi va ba'zi muammolar bor edi","React.FC tezroq","Farqi yo'q"], ans:1,
+   exp:"<code>React.FC</code> (FC = FunctionComponent) eski versiyalarda <code>children</code> ni implicit qo'shar edi bu typing muammolariga olib kelardi. Hozir plain function component + explicit props typing tavsiya etiladi: <code>function Button({ label }: ButtonProps) {}</code>"},
+
+  // ─── Next.js ───
+  {tech:"Next.js", q:"Next.js App Router da Server va Client Component farqi?", opts:["Farqi yo'q","Server Component — serverda render, interaktivlik yo'q; Client Component — 'use client' bilan brauzerda ishlaydi","Client Component serverda render bo'ladi","Server Component useState ishlatadi"], ans:1,
+   exp:"<strong>Server Component</strong> (default): serverda render qilinadi, backend data ga to'g'ridan to'g'ri kiradi, bundle ga qo'shilmaydi. <strong>Client Component</strong>: fayl boshida <code>'use client'</code>, useState/useEffect va browser API ishlata oladi."},
+  {tech:"Next.js", q:"Next.js da getServerSideProps vs getStaticProps?", opts:["Farqi yo'q","getStaticProps — build vaqtida, getServerSideProps — har so'rovda ishlaydi","getServerSideProps — build vaqtida","Ikkalasi ham bir xil vaqtda"], ans:1,
+   exp:"<code>getStaticProps</code> — build vaqtida bir marta ishlaydi, natija statik HTML. Tez, CDN cache. <code>getServerSideProps</code> — har bir so'rovda serverda ishlaydi, har doim yangi data. Lekin sekinroq. (Pages Router uchun)"},
+  {tech:"Next.js", q:"Next.js Image komponentining afzalligi?", opts:["Faqat .webp formatni qo'llab-quvvatlaydi","Lazy loading, avtomatik o'lcham optimallashtirish, zamonaviy format (WebP/AVIF) va CLS oldini olish","Faqat local rasmlar uchun","CSS stilini avtomatik beradi"], ans:1,
+   exp:"<code>&lt;Image&gt;</code> komponenti: lazy loading (viewport ga kirganida yuklanadi), avtomatik responsive o'lchamlar, WebP/AVIF konversiya, <code>priority</code> prop bilan LCP optimallashtirish va layout shift (CLS) ni oldini oladi."},
+  {tech:"Next.js", q:"Next.js middleware qayerda ishlaydi?", opts:["Client side (brauzer)","Server side, lekin Edge Runtime da — so'rov serverga yetishidan oldin","Faqat API routes da","Database da"], ans:1,
+   exp:"Next.js <code>middleware.ts</code> — Edge Runtime da ishlaydi (CDN ga yaqin). So'rov server ga yetishidan oldin ishlaydi. Authentication, redirect, A/B testing uchun ideal. Deployment da eng yaqin edge node'da execute qilinadi."},
+  {tech:"Next.js", q:"Next.js da dynamic route qanday yaratiladi?", opts:["[id].tsx — fayl nomi kvadrat qavsda","(id).tsx","id.tsx","router.dynamic('id')"], ans:0,
+   exp:"<code>[id].tsx</code> — kvadrat qavsda fayl nomi dynamic route yaratadi. <code>params.id</code> orqali qiymatga kiriladi. <code>[...slug].tsx</code> — bir nechta segment. <code>[[...slug]].tsx</code> — optional catch-all route."},
+  {tech:"Next.js", q:"Next.js da metadata API nima?", opts:["SEO uchun manual head tag","App Router da export metadata = {} yoki generateMetadata() orqali sahifa meta ma'lumotlarini boshqarish","Client side meta tag","Faqat title uchun"], ans:1,
+   exp:"App Router da <code>export const metadata = { title: '...', description: '...' }</code> yoki <code>export async function generateMetadata({ params }) {}</code> — serverda dinamik meta, SEO teglari va Open Graph belgilanadi."},
+
+  // ─── Angular ───
+  {tech:"Angular", q:"Angular da Component, Service va Module farqi?", opts:["Hammasining vazifasi bir xil","Component — UI, Service — biznes mantiq, Module — ularni birlashtiruvchi konteyner","Module — UI, Component — service","Service — UI qismi"], ans:1,
+   exp:"<strong>Component</strong>: UI va template boshqaradi. <strong>Service</strong>: biznes mantiq, HTTP so'rovlar, data boshqarish — DI orqali ineksiya qilinadi. <strong>Module</strong> (@NgModule): komponentlar, servicelar va boshqa modullarni guruhlaydi. (Standalone components bilan modul kamroq kerak)"},
+  {tech:"Angular", q:"Angular data binding turlari?", opts:["Faqat bir yo'nalishli","One-way (property, event), Two-way [(ngModel)], Interpolation {{}}","Faqat two-way","Faqat interpolation"], ans:1,
+   exp:"Angular da 4 xil binding: <code>{{ value }}</code> (interpolation), <code>[property]=\"value\"</code> (property binding), <code>(event)=\"handler()\"</code> (event binding), <code>[(ngModel)]=\"value\"</code> (two-way binding = banana in a box 🍌)."},
+  {tech:"Angular", q:"Angular Dependency Injection nima?", opts:["Fayl import qilish","Service yoki boshqa dependency ni komponentga avtomatik berish mexanizmi","HTML inject qilish","CSS inject qilish"], ans:1,
+   exp:"<strong>Dependency Injection (DI)</strong>: Angular ning DI container service lari yaratadi va ularni komponentlarga constructor orqali beradi. <code>constructor(private userService: UserService)</code> — Angular o'zi UserService instance ini yaratib beradi."},
+  {tech:"Angular", q:"Angular da *ngIf va *ngFor direktivalari?", opts:["CSS animatsiya uchun","*ngIf — shartli ko'rsatish, *ngFor — ro'yxatni iterate qilish","*ngFor — shartli, *ngIf — loop","Faqat komponent uchun"], ans:1,
+   exp:"<code>*ngIf=\"condition\"</code> — shart to'g'ri bo'lsa element ko'rsatiladi (DOM dan qo'shiladi/o'chiriladi). <code>*ngFor=\"let item of items\"</code> — array ni loop qilib har bir element uchun template yaratadi."},
+  {tech:"Angular", q:"Angular Signals (v17+) nima?", opts:["Yangi direktiva","Reaktiv holat boshqarish primitivi — Zone.js siz o'zgarishlarni kuzatish","HTTP interceptor","Router guard"], ans:1,
+   exp:"<strong>Signals</strong> (Angular 17+): <code>signal(value)</code>, <code>computed()</code>, <code>effect()</code> — Zone.js ga bog'liq bo'lmagan reaktiv state management. O'zgarish faqat bog'liq joylarda render qilinadi — performance ancha yaxshi."},
+  {tech:"Angular", q:"Angular Route Guard nima uchun?", opts:["Route animatsiyasi","Foydalanuvchining sahifaga kirishini ruxsat yoki taqiqlash","CSS routing","Lazy loading"], ans:1,
+   exp:"<strong>Route Guard</strong> (<code>CanActivate</code>, <code>CanDeactivate</code>): foydalanuvchi ma'lum sahifaga kirishi mumkin yoki yo'qligini tekshiradi. Authentication, authorization, forma saqlash ogohlantirish uchun ishlatiladi."},
+];
+
+const TOTAL_PER_SESSION = 20;
+let sessionQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  sessionQuestions = shuffle(QUESTIONS).slice(0, TOTAL_PER_SESSION);
+  currentIndex = 0;
+  score = 0;
+  answered = false;
+
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+
+  renderQuestion();
+}
+
+function techClass(tech) {
+  const map = {
+    'HTML':'html','CSS':'css','SASS':'sass','SCSS':'scss',
+    'JS':'js','JSX':'jsx','TS':'ts','TSX':'tsx',
+    'Next.js':'next','Angular':'angular'
+  };
+  return map[tech] || 'html';
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = sessionQuestions[currentIndex];
+  const progress = ((currentIndex) / TOTAL_PER_SESSION) * 100;
+
+  document.getElementById('q-counter').textContent = `${currentIndex + 1} / ${TOTAL_PER_SESSION}`;
+  document.getElementById('q-tech-label').textContent = q.tech;
+  document.getElementById('progress-fill').style.width = progress + '%';
+  document.getElementById('live-score').textContent = score;
+
+  const letters = ['A','B','C','D'];
+  const html = `
+    <div class="q-meta">
+      <span class="q-tech-badge tech-${techClass(q.tech)}">${q.tech}</span>
+      <span class="q-num">Savol ${currentIndex + 1}</span>
+    </div>
+    <div class="q-text">${q.q}</div>
+    ${q.code ? `<div class="code-block">${q.code}</div>` : ''}
+    <div class="options">
+      ${q.opts.map((opt, i) => `
+        <button class="option-btn" onclick="selectAnswer(${i})">
+          <div class="option-letter">${letters[i]}</div>
+          <div class="option-text">${opt}</div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  const card = document.getElementById('question-card');
+  card.innerHTML = html;
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'slideIn 0.4s cubic-bezier(0.4,0,0.2,1)';
+}
+
+function selectAnswer(chosenIndex) {
+  if (answered) return;
+  answered = true;
+
+  const q = sessionQuestions[currentIndex];
+  const btns = document.querySelectorAll('.option-btn');
+
+  btns.forEach(b => b.disabled = true);
+
+  if (chosenIndex === q.ans) {
+    score++;
+    btns[chosenIndex].classList.add('correct');
+    document.getElementById('live-score').textContent = score;
+    setTimeout(() => nextQuestion(), 900);
+  } else {
+    btns[chosenIndex].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+    showModal(q, q.opts[chosenIndex]);
+  }
+}
+
+function showModal(q, wrongAnswer) {
+  const modal = document.getElementById('modal');
+  document.getElementById('modal-title').textContent = '❌  Noto\'g\'ri javob!';
+  document.getElementById('modal-wrong').textContent = '✗  ' + wrongAnswer;
+  document.getElementById('modal-correct').textContent = '✓  ' + q.opts[q.ans];
+  document.getElementById('modal-explanation').innerHTML = q.exp;
+  modal.classList.add('open');
+}
+
+function nextQuestion() {
+  document.getElementById('modal').classList.remove('open');
+  currentIndex++;
+
+  if (currentIndex >= TOTAL_PER_SESSION) {
+    showResult();
+    return;
+  }
+
+  renderQuestion();
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  const resultScreen = document.getElementById('result-screen');
+  resultScreen.style.display = 'flex';
+
+  const pct = Math.round((score / TOTAL_PER_SESSION) * 100);
+  const wrong = TOTAL_PER_SESSION - score;
+
+  let emoji = '😅'; let title = 'Davom eting!';
+  if (pct >= 90) { emoji = '🏆'; title = 'Ajoyib natija!'; }
+  else if (pct >= 70) { emoji = '🎉'; title = 'Yaxshi natija!'; }
+  else if (pct >= 50) { emoji = '💪'; title = 'Yaxshi boshlash!'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score').textContent = `${score}/${TOTAL_PER_SESSION}`;
+  document.getElementById('res-correct').textContent = score;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-pct').textContent = pct + '%';
+}
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) nextQuestion();
+});
+</script>
+</body>
+</html>
