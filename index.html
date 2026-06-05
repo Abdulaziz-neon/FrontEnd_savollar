@@ -896,8 +896,26 @@ function shuffle(arr) {
   return a;
 }
 
+function shuffleQuestionOptions(question) {
+  const options = question.opts.map((opt, index) => ({
+    text: opt,
+    isCorrect: index === question.ans
+  }));
+
+  const shuffledOptions = shuffle(options);
+
+  return {
+    ...question,
+    opts: shuffledOptions.map(option => option.text),
+    ans: shuffledOptions.findIndex(option => option.isCorrect)
+  };
+}
+
 function startQuiz() {
-  sessionQuestions = shuffle(QUESTIONS).slice(0, TOTAL_PER_SESSION);
+  sessionQuestions = shuffle(QUESTIONS)
+    .slice(0, TOTAL_PER_SESSION)
+    .map(question => shuffleQuestionOptions(question));
+
   currentIndex = 0;
   score = 0;
   answered = false;
