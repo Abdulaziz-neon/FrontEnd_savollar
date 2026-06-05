@@ -887,6 +887,20 @@ let currentIndex = 0;
 let score = 0;
 let answered = false;
 
+
+function renderQuestion() {
+  answered = false;
+
+  const q = sessionQuestions[currentIndex];
+
+  if (!q.q || !q.opts?.length) {
+  console.log("BROKEN QUESTION:", q);
+}
+
+  console.log("Current Question:", q);
+
+}
+
 function shuffle(arr) {
   let a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -999,6 +1013,10 @@ function showModal(q, wrongAnswer) {
   document.getElementById('modal-correct').textContent = '✓  ' + q.opts[q.ans];
   document.getElementById('modal-explanation').innerHTML = q.exp;
   modal.classList.add('open');
+
+setTimeout(() => {
+  nextQuestion();
+}, 2000);
 }
 
 function nextQuestion() {
